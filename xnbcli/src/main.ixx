@@ -3,7 +3,8 @@ import xnb;
 import texture;
 import sound;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     for (std::size_t i{ 1 }; i < argc; i++) {
         std::filesystem::path file{ argv[i] };
         if (!std::filesystem::exists(file)) continue;
@@ -11,7 +12,7 @@ int main(int argc, char* argv[]) {
         const std::filesystem::path extension{ file.extension() };
 
         if (extension == ".xnb") {
-            std::expected<xnb, std::string> result{ xnb::read(file) };
+            std::expected<xnb, std::string> result{ xnb::read_xnb(file) };
             if (result.has_value()) {
                 const std::string& type_name{ result->type->reader_name() };
                 if (type_name == texture::reader) {
@@ -41,7 +42,7 @@ int main(int argc, char* argv[]) {
             }
         }
         else if (extension == ".png") {
-            std::expected<xnb, std::string> result{ xnb::write<texture>(file) };
+            std::expected<xnb, std::string> result{ xnb::write_xnb<texture>(file) };
             if (result.has_value()) {
                 std::println("Successfully exported: {}", file.string());
             }
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
             }
         }
         else if (extension == ".wav") {
-            std::expected<xnb, std::string> result{ xnb::write<sound>(file) };
+            std::expected<xnb, std::string> result{ xnb::write_xnb<sound>(file) };
             if (result.has_value()) {
                 std::println("Successfully exported: {}", file.string());
             }

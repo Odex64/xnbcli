@@ -54,6 +54,9 @@
     <ClCompile Include="src\parser\convertible.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\readers\readers.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\dependencies\stb_image.h">

@@ -32,7 +32,7 @@ public:
     texture(texture&& other) noexcept = delete;
     texture& operator=(texture&&) noexcept = delete;
 
-    static [[nodiscard]] std::expected<std::unique_ptr<texture>, std::string> read(binary_reader& stream) noexcept
+    static [[nodiscard]] std::expected<std::unique_ptr<texture>, std::string> read_from_memory(binary_reader& stream) noexcept
     {
         const std::int32_t format{ stream.read<std::int32_t>() };
         if (format != 0) return std::unexpected("Invalid texture format");
@@ -65,7 +65,7 @@ public:
         );
     }
 
-    static [[nodiscard]] std::expected<std::unique_ptr<texture>, std::string> read(const std::filesystem::path& file) noexcept
+    static [[nodiscard]] std::expected<std::unique_ptr<texture>, std::string> read_from_file(const std::filesystem::path& file) noexcept
     {
         if (file.extension() != ".png") return std::unexpected("Wrong file format");
 

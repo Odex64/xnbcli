@@ -25,7 +25,7 @@ public:
     sound(sound&& other) noexcept = delete;
     sound& operator=(sound&&) noexcept = delete;
 
-    static [[nodiscard]] std::expected<std::unique_ptr<sound>, std::string> read(binary_reader& stream) noexcept
+    static [[nodiscard]] std::expected<std::unique_ptr<sound>, std::string> read_from_memory(binary_reader& stream) noexcept
     {
         const std::uint32_t format_size{ stream.read<std::uint32_t>() };
         if (format_size != 18) return std::unexpected("Audio format not supported");
@@ -58,7 +58,7 @@ public:
         );
     }
 
-    static [[nodiscard]] std::expected<std::unique_ptr<sound>, std::string> read(const std::filesystem::path& file) noexcept
+    static [[nodiscard]] std::expected<std::unique_ptr<sound>, std::string> read_from_file(const std::filesystem::path& file) noexcept
     {
         if (file.extension() != ".wav") return std::unexpected("Wrong file format");
 

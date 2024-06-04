@@ -88,6 +88,7 @@
     <ClCompile Include="src\parser\convertible.ixx" />
     <ClCompile Include="src\parser\flags.ixx" />
     <ClCompile Include="src\parser\platform.ixx" />
+    <ClCompile Include="src\readers\readers.ixx" />
     <ClCompile Include="src\readers\sound.ixx" />
     <ClCompile Include="src\readers\texture.ixx" />
     <ClCompile Include="src\parser\xnb.ixx" />

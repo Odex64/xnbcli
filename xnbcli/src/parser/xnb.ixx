@@ -8,8 +8,7 @@ import flags;
 import compress;
 import converter;
 import convertible;
-import texture;
-import sound;
+import readers;
 
 export class xnb final {
 private:
@@ -30,7 +29,7 @@ public:
     xnb(xnb&&) = delete;
     xnb& operator=(xnb&&) = delete;
 
-    static [[nodiscard]] std::expected<xnb, std::string> read(const std::filesystem::path& file) noexcept
+    static [[nodiscard]] std::expected<xnb, std::string> read_xnb(const std::filesystem::path& file) noexcept
     {
         if (file.extension() != ".xnb") return std::unexpected("Wrong file format");
         if (!std::filesystem::exists(file)) return std::unexpected("File does not exists");
@@ -112,22 +111,18 @@ public:
     }
 
     template<convertible T>
-    static [[nodiscard]] std::expected<xnb, std::string> write(std::filesystem::path& file) noexcept
+    static [[nodiscard]] std::expected<xnb, std::string> write_xnb(std::filesystem::path& file) noexcept
     {
         if (!std::filesystem::exists(file)) return std::unexpected("File does not exist");
 
         std::expected<std::unique_ptr<converter>, std::string> type{ nullptr };
         const std::filesystem::path& extension{ file.extension() };
-        if constexpr (std::is_same<T, texture>::value) {
-            if (extension != ".png") return std::unexpected("Wrong file extension");
-            if (std::expected<std::unique_ptr<texture>, std::string> texture = texture::read(file); texture.has_value()) {
-                type = std::move(texture.value());
-            }
-        }
-        else if constexpr (std::is_same<T, sound>::value) {
-            if (extension != ".wav") return std::unexpected("Wrong file extension");
-            if (std::expected<std::unique_ptr<sound>, std::string> sound = sound::read(file); sound.has_value()) {
-                type = std::move(sound.value());
+
+        for (const reader& current_reader : readers) {
+            if (T::reader == current_reader.name) {
+                if (std::expected<std::unique_ptr<converter>, std::string> reader_type = current_reader.read_from_file(file); reader_type.has_value()) {
+                    type = std::move(reader_type);
+                }
             }
         }
 
@@ -207,14 +202,11 @@ private:
         if (index > readers_count) std::unexpected("Resources count and readers count do not match");
 
         std::expected<std::unique_ptr<converter>, std::string> type{ nullptr };
-        if (type_name == texture::reader) {
-            if (std::expected<std::unique_ptr<texture>, std::string> texture = texture::read(stream); texture.has_value()) {
-                type = std::move(texture);
-            }
-        }
-        else if (type_name == sound::reader) {
-            if (std::expected<std::unique_ptr<sound>, std::string> sound = sound::read(stream); sound.has_value()) {
-                type = std::move(sound);
+        for (const reader& current_reader : readers) {
+            if (type_name == current_reader.name) {
+                if (std::expected<std::unique_ptr<converter>, std::string> reader_type = current_reader.read_from_memory(stream); reader_type.has_value()) {
+                    type = std::move(reader_type);
+                }
             }
         }
 
